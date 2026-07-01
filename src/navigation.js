@@ -1,4 +1,6 @@
 (function () {
+  const ENDING_THRESHOLD_SECONDS = 1.5;
+
   function buildWatchUrl(videoId, playlistId) {
     const url = new URL("https://www.youtube.com/watch");
     url.searchParams.set("v", videoId);
@@ -22,6 +24,10 @@
     }
 
     return state.currentIndex + 1;
+  }
+
+  function getCurrentPlaybackKey() {
+    return `${window.ytprPlaylist.getPlaylistId() || ""}:${window.ytprPlaylist.getCurrentVideoId() || ""}`;
   }
 
   async function continueReversePlayback() {
@@ -49,21 +55,45 @@
     goToVideo(nextVideoId, state.playlistId);
   }
 
-  function watchVideoEnd() {
-    const video = document.querySelector("video");
+  async function continueOnce(video) {
+    const playbackKey = getCurrentPlaybackKey();
 
-    if (!video || video.dataset.ytprWatchingEnd === "true") {
+    if (!playbackKey || video.dataset.ytprHandledPlaybackKey === playbackKey) {
       return;
     }
 
-    video.dataset.ytprWatchingEnd = "true";
-    video.addEventListener("ended", continueReversePlayback);
+    video.dataset.ytprHandledPlaybackKey = playbackKey;
+    await continueReversePlayback();
+  }
+
+  function isNearEnd(video) {
+    if (!Number.isFinite(video.duration) || video.duration <= 0) {
+      return false;
+    }
+
+    return video.duration - video.currentTime <= ENDING_THRESHOLD_SECONDS;
+  }
+
+  function watchVideoProgress() {
+    const video = document.querySelector("video");
+
+    if (!video || video.dataset.ytprWatchingProgress === "true") {
+      return;
+    }
+
+    video.dataset.ytprWatchingProgress = "true";
+    video.addEventListener("ended", () => continueOnce(video));
+    video.addEventListener("timeupdate", () => {
+      if (isNearEnd(video)) {
+        continueOnce(video);
+      }
+    });
   }
 
   window.ytprNavigation = {
     buildWatchUrl,
     continueReversePlayback,
     goToVideo,
-    watchVideoEnd
+    watchVideoProgress
   };
 })();

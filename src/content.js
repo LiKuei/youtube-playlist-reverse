@@ -53,15 +53,13 @@
     }
 
     const videoIds = items.map((item) => item.videoId).reverse();
-    const currentVideoId = window.ytprPlaylist.getCurrentVideoId();
-    const currentIndex = currentVideoId ? videoIds.indexOf(currentVideoId) : -1;
-    const firstVideoId = currentIndex >= 0 ? videoIds[currentIndex] : videoIds[0];
+    const firstVideoId = videoIds[0];
 
     await window.ytprStorage.setState({
       enabled: true,
       playlistId,
       videoIds,
-      currentIndex: currentIndex >= 0 ? currentIndex : 0
+      currentIndex: 0
     });
 
     showStatus(`已建立反轉播放佇列，共 ${videoIds.length} 部影片。`, "success");
@@ -113,14 +111,14 @@
     lastUrl = window.location.href;
     window.setTimeout(() => {
       injectButton();
-      window.ytprNavigation.watchVideoEnd();
+      window.ytprNavigation.watchVideoProgress();
     }, 800);
   }
 
   function startObservers() {
     const observer = new MutationObserver(() => {
       injectButton();
-      window.ytprNavigation.watchVideoEnd();
+      window.ytprNavigation.watchVideoProgress();
       handleUrlChange();
     });
 
@@ -131,6 +129,6 @@
   }
 
   injectButton();
-  window.ytprNavigation.watchVideoEnd();
+  window.ytprNavigation.watchVideoProgress();
   startObservers();
 })();
