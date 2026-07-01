@@ -129,6 +129,7 @@
     window.setTimeout(() => {
       injectButton();
       refreshButtonState();
+      window.ytprNavigation.watchUnavailableVideo();
       window.ytprNavigation.watchVideoProgress();
     }, 800);
   }
@@ -136,6 +137,7 @@
   function startObservers() {
     const observer = new MutationObserver(() => {
       injectButton();
+      window.ytprNavigation.watchUnavailableVideo();
       window.ytprNavigation.watchVideoProgress();
       handleUrlChange();
     });
@@ -147,6 +149,7 @@
   }
 
   injectButton();
+  window.ytprNavigation.watchUnavailableVideo();
   window.ytprNavigation.watchVideoProgress();
   startObservers();
 })();
