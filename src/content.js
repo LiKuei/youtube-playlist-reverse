@@ -26,6 +26,18 @@
     }, 3200);
   }
 
+  async function getCurrentPlaylistState() {
+    const state = await window.ytprStorage.getState();
+    const playlistId = window.ytprPlaylist.getPlaylistId();
+
+    if (state.enabled && playlistId && state.playlistId !== playlistId) {
+      await window.ytprStorage.clearState();
+      return window.ytprStorage.getState();
+    }
+
+    return state;
+  }
+
   async function refreshButtonState() {
     const button = document.getElementById(BUTTON_ID);
 
@@ -33,7 +45,7 @@
       return;
     }
 
-    const state = await window.ytprStorage.getState();
+    const state = await getCurrentPlaylistState();
     button.textContent = getButtonLabel(state);
     button.setAttribute("aria-pressed", String(state.enabled));
   }
@@ -73,7 +85,7 @@
   }
 
   async function handleButtonClick() {
-    const state = await window.ytprStorage.getState();
+    const state = await getCurrentPlaylistState();
 
     if (state.enabled) {
       await stopReversePlayback();
@@ -84,7 +96,12 @@
   }
 
   async function injectButton() {
-    if (!window.ytprPlaylist.isPlaylistPage() || document.getElementById(BUTTON_ID)) {
+    if (!window.ytprPlaylist.isPlaylistPage()) {
+      return;
+    }
+
+    if (document.getElementById(BUTTON_ID)) {
+      await refreshButtonState();
       return;
     }
 
@@ -111,6 +128,7 @@
     lastUrl = window.location.href;
     window.setTimeout(() => {
       injectButton();
+      refreshButtonState();
       window.ytprNavigation.watchVideoProgress();
     }, 800);
   }

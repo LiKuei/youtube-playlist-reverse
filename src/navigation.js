@@ -32,8 +32,14 @@
 
   async function continueReversePlayback() {
     const state = await window.ytprStorage.getState();
+    const playlistId = window.ytprPlaylist.getPlaylistId();
 
     if (!state.enabled || !state.videoIds.length) {
+      return;
+    }
+
+    if (!playlistId || state.playlistId !== playlistId) {
+      await window.ytprStorage.clearState();
       return;
     }
 
