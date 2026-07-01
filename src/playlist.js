@@ -17,6 +17,29 @@
       : null;
   }
 
+  function parseWatchAnchor(anchor) {
+    if (!anchor.href) {
+      return null;
+    }
+
+    try {
+      const url = new URL(anchor.href);
+      const videoId = normalizeVideoId(url.searchParams.get("v"));
+
+      if (!videoId) {
+        return null;
+      }
+
+      return {
+        anchor,
+        playlistId: url.searchParams.get("list"),
+        videoId
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
   function findPlaylistContainers() {
     return [
       document.querySelector("ytd-playlist-panel-renderer"),
@@ -34,18 +57,6 @@
     );
   }
 
-  function extractVideoIdFromAnchor(anchor) {
-    if (!anchor.href) {
-      return null;
-    }
-
-    try {
-      return normalizeVideoId(new URL(anchor.href).searchParams.get("v"));
-    } catch (error) {
-      return null;
-    }
-  }
-
   function getTitleFromAnchor(anchor) {
     const title =
       anchor.getAttribute("title") ||
@@ -57,24 +68,31 @@
   }
 
   function getVisiblePlaylistItems() {
+    const currentPlaylistId = getPlaylistId();
     const containers = findPlaylistContainers();
-    const anchors = containers.flatMap((container) =>
-      Array.from(container.querySelectorAll('a[href*="watch"][href*="v="]'))
-    );
+    const parsedAnchors = containers
+      .flatMap((container) => Array.from(container.querySelectorAll('a[href*="watch"][href*="v="]')))
+      .map(parseWatchAnchor)
+      .filter(Boolean);
+
+    const matchingPlaylistAnchors = currentPlaylistId
+      ? parsedAnchors.filter((item) => item.playlistId === currentPlaylistId)
+      : [];
+    const anchorsForCurrentPlaylist = matchingPlaylistAnchors.length
+      ? matchingPlaylistAnchors
+      : parsedAnchors.filter((item) => !item.playlistId);
 
     const seenVideoIds = new Set();
 
-    return anchors.reduce((items, anchor) => {
-      const videoId = extractVideoIdFromAnchor(anchor);
-
-      if (!videoId || seenVideoIds.has(videoId)) {
+    return anchorsForCurrentPlaylist.reduce((items, item) => {
+      if (seenVideoIds.has(item.videoId)) {
         return items;
       }
 
-      seenVideoIds.add(videoId);
+      seenVideoIds.add(item.videoId);
       items.push({
-        videoId,
-        title: getTitleFromAnchor(anchor)
+        videoId: item.videoId,
+        title: getTitleFromAnchor(item.anchor)
       });
 
       return items;
