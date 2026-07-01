@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>YouTube Playlist Reverse</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup">
+      <header class="popup__header">
+        <img src="../icons/icon.svg" alt="" width="32" height="32">
+        <div>
+          <h1>YouTube Playlist Reverse</h1>
+          <p id="statusText">讀取狀態中...</p>
+        </div>
+      </header>
+
+      <dl class="popup__stats">
+        <div>
+          <dt>播放清單</dt>
+          <dd id="playlistId">-</dd>
+        </div>
+        <div>
+          <dt>佇列數量</dt>
+          <dd id="queueCount">0</dd>
+        </div>
+      </dl>
+
+      <button id="stopButton" type="button">停止反轉播放</button>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Playlist Reverse",
+  "version": "0.1.0",
+  "description": "Reverse the visible order of a YouTube playlist and continue playback from the newest or last item.",
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
+  "action": {
+    "default_title": "YouTube Playlist Reverse",
+    "default_popup": "popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "src/storage.js",
+        "src/playlist.js",
+        "src/navigation.js",
+        "src/content.js"
+      ],
+      "css": [
+        "styles/content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "youtube-playlist-reverse@kuei.local",
+      "strict_min_version": "109.0"
+    }
+  }
+}

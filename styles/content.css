@@ -1,0 +1,48 @@
+#ytpr-reverse-button {
+  align-items: center;
+  background: #0f0f0f;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  margin: 8px 0;
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+#ytpr-reverse-button:hover {
+  background: #272727;
+}
+
+#ytpr-reverse-button[aria-pressed="true"] {
+  background: #cc0000;
+  border-color: #cc0000;
+}
+
+#ytpr-status {
+  background: #0f0f0f;
+  border-radius: 6px;
+  bottom: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+  color: #ffffff;
+  font-family: Roboto, Arial, sans-serif;
+  font-size: 14px;
+  left: 24px;
+  max-width: 360px;
+  padding: 12px 14px;
+  position: fixed;
+  z-index: 2147483647;
+}
+
+#ytpr-status[data-type="success"] {
+  border-left: 4px solid #16a34a;
+}
+
+#ytpr-status[data-type="error"] {
+  border-left: 4px solid #dc2626;
+}
